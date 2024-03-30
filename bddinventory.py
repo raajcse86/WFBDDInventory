@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 
 
 model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
-client = chromadb.EphemeralClient()
+# client = chromadb.EphemeralClient()
 client = chromadb.PersistentClient(path="bddinventory_db")
 
 import os
