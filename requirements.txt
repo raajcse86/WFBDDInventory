@@ -1,6 +1,3 @@
 streamlit
-chromadb
+chromadb == 0.3.21
 sentence-transformers
-sqlite-devel
-sqlite3
-pysqlite
