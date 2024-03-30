@@ -19,7 +19,7 @@ RUN apt-get update \
 RUN pip3 install --upgrade pip
 RUN pip3 install streamlit
 RUN pip3 install chromadb
-RUN pip3 install sentence-transformers
+# RUN pip3 install sentence-transformers
 RUN pip3 install streamlit-tags
 # RUN pip3 install torch=="1.12.1"
 

@@ -5,10 +5,10 @@ import pandas as pd
 import json
 import time
 from pandas import DataFrame
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 
 
-model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
+# model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
 client = chromadb.EphemeralClient()
 client = chromadb.PersistentClient(path="bddinventory_db")
 
@@ -76,39 +76,69 @@ documents = []
 embeddings = []
 metadatas = []
 ids = []
-def enumerateFileData(model, file_data, documents, embeddings, metadatas, ids):
-    for index,data in enumerate(file_data):
-      documents.append(data['file_name'])
-      embeding = model.encode(data['package_name']+" "+data['file_name']).tolist()
-      embeddings.append(embeding)
-      metadatas.append({'package':data['package_name']})
-      ids.append(str(index+1))
+# def enumerateFileData(model, file_data, documents, embeddings, metadatas, ids):
+#     for index,data in enumerate(file_data):
+#       documents.append(data['file_name'])
+#       embeding = model.encode(data['package_name']+" "+data['file_name']).tolist()
+#       embeddings.append(embeding)
+#       metadatas.append({'package':data['package_name']})
+#       ids.append(str(index+1))
 
-enumerateFileData(model, file_data, documents, embeddings, metadatas, ids)
+# enumerateFileData(model, file_data, documents, embeddings, metadatas, ids)
+
+def enumerateFileData(file_data, documents,metadatas, ids):
+    for index,data in enumerate(file_data):
+      documents.append(data['package_name']+" "+data['file_name'])
+      metadatas.append({'package':data['package_name'],'file_name':data['file_name']})
+      ids.append(str(index+1))
+enumerateFileData(file_data, documents,metadatas, ids)
 
 # documents
 
-def createOrGetCollection(client, documents, embeddings, metadatas, ids):
+# def createOrGetCollection(client, documents, embeddings, metadatas, ids):
+#     bdd_inv_collection = client.get_or_create_collection("bdd_inv_collection")
+#     if bdd_inv_collection.count() <= 0:
+#         bdd_inv_collection.add(
+#         documents=documents,
+#         embeddings=embeddings,
+#         metadatas=metadatas,
+#         ids=ids
+#     )
+        
+#     return bdd_inv_collection
+
+# bdd_inv_collection = createOrGetCollection(client, documents, embeddings, metadatas, ids)
+
+def createOrGetCollection(client, documents,metadatas, ids):
     bdd_inv_collection = client.get_or_create_collection("bdd_inv_collection")
     if bdd_inv_collection.count() <= 0:
         bdd_inv_collection.add(
         documents=documents,
-        embeddings=embeddings,
         metadatas=metadatas,
         ids=ids
     )
         
     return bdd_inv_collection
 
-bdd_inv_collection = createOrGetCollection(client, documents, embeddings, metadatas, ids)
-
+bdd_inv_collection = createOrGetCollection(client, documents,metadatas, ids)
 
 def queryByEmbeddingSearch(resultCount, bdd_inv_collection, input_em):
     results = bdd_inv_collection.query(
     query_embeddings=[input_em],
     n_results=resultCount
 )
-    
+def queryByNonEmbeddingSearch(resultCount, bdd_inv_collection, query_search):
+    results = bdd_inv_collection.query(
+    query_texts=[query_search],
+    n_results=resultCount,
+    # where={
+    #         "package":
+    #             { 
+    #                 "$eq": query_search
+    #             }
+    #         },
+    # where_document={"$contains":query_search}
+)    
     return results
 
 finalResultsIds=[]
@@ -138,8 +168,11 @@ def enumerateQueryResult(results, finalResultsIds, finalResultsDistances, finalR
                     finalResultsFileNames.append(r)
 
 if ((query_search != None) and (len(query_search) > 0)):
-    input_em = model.encode(query_search).tolist()
-    results = queryByEmbeddingSearch(resultCount, bdd_inv_collection, input_em)
+    # input_em = model.encode(query_search).tolist()
+    # results = queryByEmbeddingSearch(resultCount, bdd_inv_collection, input_em)
+
+    results = queryByNonEmbeddingSearch(resultCount, bdd_inv_collection, query_search)
+
     enumerateQueryResult(results, finalResultsIds, finalResultsDistances, finalResultsMetadatas, finalResultsFileNames)
     # print(f"Documents >>  {finalResultsFileNames}")
     # print(f"IDS >> {finalResultsIds}")
