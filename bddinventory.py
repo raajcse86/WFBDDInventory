@@ -1,6 +1,6 @@
 import chromadb
 import streamlit as st
-from streamlit_tags import st_tags 
+# from streamlit_tags import st_tags 
 import pandas as pd
 import json
 import time
@@ -22,22 +22,23 @@ st.title('BDD Inventory Search Application')
 
 
 # col1, col2 = st.columns(2)
-keywords = st_tags(
-    label='# Enter Keywords:',
-    text='Press enter to add more',
-    value=['Credit'],
-    suggestions=['HMDA', 'Property', 'lightRiskEngine', 
-                 'productPricingRatesUI', 'LRERequestDecision', 'declarationsUI', 
-                 ],
-    maxtags = 4,
-    key='1')
-# query_search = col1.text_input("Enter Search Text", value="credit")
+# keywords = st_tags(
+#     label='# Enter Keywords:',
+#     text='Press enter to add more',
+#     value=['Credit'],
+#     suggestions=['HMDA', 'Property', 'lightRiskEngine', 
+#                  'productPricingRatesUI', 'LRERequestDecision', 'declarationsUI', 
+#                  ],
+#     maxtags = 4,
+#     key='1')
 
-query_search=""
+query_search = st.text_input("Enter Search Text", value="credit")
 
-for keyword in keywords:
-    query_search=query_search+keyword
-    query_search=query_search+" "
+# query_search=""
+
+# for keyword in keywords:
+#     query_search=query_search+keyword
+#     query_search=query_search+" "
 
 # print(f"querysearch >> {query_search}")
 
