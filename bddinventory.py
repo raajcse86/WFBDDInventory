@@ -9,7 +9,7 @@ import json
 import time
 from pandas import DataFrame
 # from sentence_transformers import SentenceTransformer
-import plotly.figure_factory as ff
+# import plotly.figure_factory as ff
 
 
 
