@@ -6,11 +6,14 @@ import json
 import time
 from pandas import DataFrame
 # from sentence_transformers import SentenceTransformer
+import plotly.figure_factory as ff
+
 
 
 # model = SentenceTransformer('paraphrase-MiniLM-L3-v2')
-client = chromadb.EphemeralClient()
-client = chromadb.PersistentClient(path="bddinventory_db")
+# client = chromadb.EphemeralClient()
+client = chromadb.Client()
+# client = chromadb.PersistentClient(path="bddinventory_db")
 
 import os
 
@@ -39,10 +42,6 @@ query_search=""
 for keyword in keywords:
     query_search=query_search+keyword
     query_search=query_search+" "
-
-# print(f"querysearch >> {query_search}")
-
-# resultCount = st.number_input("Count Looking for", min_value=0, value=10)
 
 resultCount = st.slider('Count Looking for ?', 0, 30, 10)
 
@@ -122,6 +121,7 @@ def createOrGetCollection(client, documents,metadatas, ids):
 
 bdd_inv_collection = createOrGetCollection(client, documents,metadatas, ids)
 
+
 def queryByEmbeddingSearch(resultCount, bdd_inv_collection, input_em):
     results = bdd_inv_collection.query(
     query_embeddings=[input_em],
@@ -194,9 +194,19 @@ if ((query_search != None) and (len(query_search) > 0)):
         df = pd.DataFrame(finalResults)
         st.dataframe(df)
 
-        st.markdown("Scatter Chart")
+        st.markdown("SCATTER CHART")
         dfplot = pd.DataFrame(finalPlotResults,columns=["Distances"])
+
         st.scatter_chart(dfplot)
+
+        st.markdown("BAR CHART")
+        st.bar_chart(dfplot)
+
+        st.markdown("LINE CHART")
+        st.line_chart(dfplot)
+
+
+
     else:
         st.info('No file matching the keywords', icon="ℹ️")
 else:

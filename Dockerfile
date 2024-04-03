@@ -1,30 +1,20 @@
-FROM ubuntu:latest
+# Use a Python base image
+FROM python:3.9-slim
 
-WORKDIR /usr/app/src
+# Set the working directory inside the container
+WORKDIR /app
 
-ARG LANG='en_us.UTF-8'
+# Copy the requirements file into the container
+COPY requirements.txt .
 
-# COPY requirements.txt ./requirements.txt
-# RUN pip3 install -r requirements.txt
+# Install the required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        apt-utils \
-        locales \
-        python3-pip \
-        python3-yaml \
-        rsyslog systemd systemd-cron sudo \
-    && apt-get clean
+# Copy the rest of the application code into the container
+COPY . .
 
-RUN pip3 install --upgrade pip
-RUN pip3 install streamlit
-RUN pip3 install chromadb
-# RUN pip3 install sentence-transformers
-RUN pip3 install streamlit-tags
-# RUN pip3 install torch=="1.12.1"
-
-
+# Expose the port on which Streamlit will run (default is 8501)
 EXPOSE 8501
-COPY / ./
-ENTRYPOINT [ "streamlit","run"]
-CMD [ "bddinventory.py" ]
+
+# Command to run the Streamlit app
+CMD ["streamlit", "run", "bddinventory.py"]
